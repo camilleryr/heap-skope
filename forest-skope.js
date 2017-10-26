@@ -19,7 +19,7 @@ const forest = [
 ]
 
 // how many logs fit into a container
-let containerCapacity = 22
+let containerCapacity = 15
 
 // container generator - will make up to 10
 const cropContainerGenerator = function* () {
