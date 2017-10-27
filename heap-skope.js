@@ -49,26 +49,22 @@ const gemHeapSkope = function () { // No parameter needed
             the gem mine, but make sure you stop when there
             are no minerals left.
             */
-            if (GemMine[requestedMineral].kilograms > 5) {
+            
             /*
             You can reference the `GemMine` variable here
             because it lives in an outer scope:
             e.g. GemMine[requestedMineral].kilograms
             */
-            GemMine[requestedMineral].kilograms -= 5
 
-                return {
-                    "mineral": requestedMineral,
-                    "amount": 5 // Change this to the correct amount
-                }
-            }
-
-            let gemRemainder = GemMine[requestedMineral].kilograms
-            GemMine[requestedMineral].kilograms = 0
+            let gem = GemMine[requestedMineral]
+            let kilogramsToProcess = gem.kilograms
+            let processedKilograms = (kilogramsToProcess > 5) ? 5 : kilogramsToProcess
             
+            GemMine[requestedMineral].kilograms -= processedKilograms
+
             return {
                 "mineral": requestedMineral,
-                "amount": gemRemainder // Change this to the correct amount
+                "amount": processedKilograms // Change this to the correct amount
             }
         }
     }
@@ -90,17 +86,23 @@ const processGems = gemToProcess => {
     // Create an empty array to return after funtion fills it
     let processedGemArray = []
 
-    // Process gems until it returns an "empty gem package"
-    while (true) {
-        let processedGems = SkopeManager.process(gemToProcess)
-
-        if (processedGems.amount > 0) {
-            processedGemArray.push(processedGems)
-        } else {
-            return processedGemArray
-        }
-    }
+    let processedGems = SkopeManager.process(gemToProcess)
+    
+    do {
+        processedGemArray.push(processedGems)
+        processedGems = SkopeManager.process(gemToProcess)
+    } while (processedGems.amount > 0)
+    
+    return processedGemArray    
 }
+    // Process gems until it returns an "empty gem package"
+
+    // do {
+    //     processedGemArray.unshift(SkopeManager.process(gemToProcess))
+    // } while (processedGemArray[0].amount === 5)
+
+    // return processedGemArray
+
 
 // Database to pack all packaged gems into
 const processedGemDatabase = [
@@ -164,7 +166,7 @@ processedGemDatabase.forEach(element => {
 
         //If there is not enough room left in the container, push the container to the heapSkope and create a new container
         if (gemPackage.amount > currentStorageContainer.remainingCapacity) {
-            heapSkopeContainer.push(currentStorageContainer)
+            heapSkopeContainer.push(currentStorageContainer)    
             currentStorageContainer = storageContainerFactory.next().value
         }
         //subrtact amount of gemPackage from remainingCapacity of currentStorageContainer and add the package to the currentStorageContainer's orders

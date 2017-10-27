@@ -33,21 +33,18 @@ const mineHeapSkope = function () {
 
     // function to process minerals  - returns an object of up to 5kg until all mineral has been processed
     const processMineral = function (mineral, mine) {      
-        let amountOfMineral = mines[mine][mineral].kilograms
-        if (amountOfMineral > 5) {
-            mines[mine][mineral].kilograms -= 5          
-            return {
-                "mineral": mineral,
-                "amount": 5 
-            }
+
+        let selectedMineral = mines[mine][mineral]
+        let kilogramsToProcess = selectedMineral.kilograms
+        let processedKilograms = (kilogramsToProcess > 5) ? 5 : kilogramsToProcess
+        
+        mines[mine][mineral].kilograms -= processedKilograms
+
+        return {
+            "mineral": mineral,
+            "amount": processedKilograms // Change this to the correct amount
         }
-            //returns final package
-            mines[mine][mineral].kilograms = 0          
-            return {
-                "mineral": mineral,
-                "amount": amountOfMineral
-            }
-        }
+    }
 
     //return function to process resources of the mines - send in the argument of the mine, calls the processMineral function and collects "packages" - returns an array of objects with the mineral name and the array of processed packages
     return {
@@ -105,4 +102,3 @@ for (let mine in processedMines) {
     
     mineHeapSkopeContainer.push(currentStorageContainer)
 }
-
