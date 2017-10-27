@@ -64,16 +64,25 @@ let returnPackage = mineHeapSkope()
 let mineHeapSkopeContainer = []
 
 // request packages until none remail
-while (returnedPackage = returnPackage.process().next().value) 
-{
-    // check the capacity of the storage container and if there is not enough capacity for the package, add the storage container to the heap skope and create a new container
-    if (returnedPackage.amount > currentStorageContainer.remainingCapacity) {
-        mineHeapSkopeContainer.push(currentStorageContainer)
-        currentStorageContainer = storageContainerFactory.next().value
+const retrieveProcessedMinerals = function() {
+    while (returnedPackage = returnPackage.process().next().value) 
+    {
+        // check the capacity of the storage container and if there is not enough capacity for the package, add the storage container to the heap skope and create a new container
+        if (returnedPackage.amount > currentStorageContainer.remainingCapacity) {
+            mineHeapSkopeContainer.push(currentStorageContainer)
+            currentStorageContainer = storageContainerFactory.next().value
+        }
+        
+        // subtract the package amount from the storageContainer push package to heap skope
+        currentStorageContainer.remainingCapacity -= returnedPackage.amount
+        currentStorageContainer.orders.push(returnedPackage)
+        
     }
-    
-    // subtract the package amount from the storageContainer push package to heap skope
-    currentStorageContainer.remainingCapacity -= returnedPackage.amount
-    currentStorageContainer.orders.push(returnedPackage)
-    
- }
+
+    if (currentStorageContainer.orders.length > 0) {
+        mineHeapSkopeContainer.push(currentStorageContainer)
+    }
+}
+
+retrieveProcessedMinerals()
+console.log(mineHeapSkopeContainer)
